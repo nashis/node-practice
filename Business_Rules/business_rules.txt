@@ -1,0 +1,53 @@
+Rules engine could be one possible option, but considering that the application being developed needs to include previously defined business rules, we could go for a custom made solution for following reasons:
+
+1. Limited knowledge on the existing technology stack
+2. Dependency on third party solution
+3. Possible integration issues
+4. Continuous changes and accommodating the same
+
+The second approach would be to build the application in following way:
+
+1. Document all flows for order processing, for the following reasons
+    * Gives more clarity about different work flows
+    * Better understanding of how system / rules change
+    * Testing becomes easier
+2. Differentiate between our application logic and business rules and implement them separately.
+3. Put all the varying components like discount amount into a centralized storage like a database table / config file.
+4. Design the application in an object oriented approach
+    * All entity classes can be modeled separately (like product, member) and all of then inherit from a base model
+    * All business rules can be modeled as separate class instances, and every time we want to add a rule we add a new class that inherits some base rule class
+    * The base class could have generic methods like applyRule, which could be invoked in the context of entity classes
+    * Have all of the configuration values in a database table, or a config JSON file
+    * Have all of the business rules in a database table, or a rules JSON file.
+    * All rules can be captured in JSON file format for following reasons:
+        - parse and create programmable APIs faster, like
+            building an UI for creating or editing rules
+            parsing rules and creating rule expressions to be applied
+        - could be loaded in memory on demand with least serialization / deserialization cost
+        - exposing it as a REST based service API becomes lot easier
+5. Now every time some action happens, like a payment, there would be a rules manager that invokes itself against all the entities part of the the purchase, does a lookup in the rules, and applies the rules
+
+Sample JSON Structure:
+
+bookPayment = {
+    type: book,
+    bookId: B1,
+    rules: {
+        "packing slip": {dept: "shipping, royalty"},
+        "commission": {agent: agentId}
+    }
+}
+
+membershipPayment = {
+    type: member,
+    memberId: M1,
+    rules: {
+        "activate membership": {type: "platinum"},
+        "upgrade membership": {type: "platinum"},
+        "email": {template: config.membership_email_template, email: email_address}
+    }
+}
+
+6. Considering the above structure, when a payment is received for a membership, then we take the member instance identified by memberId and iterate through the list of rules and apply them. Each rule has all the meta-data needed to perform the action independently.
+7. Testing of such an application becomes easier, as each rule is available as a independent module with it's own dependencies and scope.
+8. It also becomes easier to define new rules as we need to program a new class implementing the rule and the existing logic (including UI) need not change.
