@@ -16,11 +16,6 @@ init();
  */
 function init() {
     var stdin = process.stdin;
-    var domain = require('domain').create();
-
-    domain.on('error', function (e) {
-        console.log(e);
-    });
 
     console.log('Enter the file location');
 
@@ -54,8 +49,7 @@ function _processUserInput(fileName) {
                 _processLine(line);
             }
         })
-        .on('end', function (err) {
-            if (err) console.log(err);
+        .on('end', function () {
             console.log('Total number of code lines in file "' + fileName + '": ' + codeLinesCnt);
             process.exit();
         });
