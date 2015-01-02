@@ -34,7 +34,7 @@ function init() {
  */
 function _processUserInput(fileName) {
     var fs = require('fs');
-    var liner = require('./liner');
+    var liner = require('../Utils/liner');
     fs.createReadStream(fileName)
         .on('error', function (e) {
             console.log('Unable to open the specified file. Please check the path and try again');
