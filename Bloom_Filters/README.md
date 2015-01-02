@@ -1,4 +1,4 @@
-#Counting Code Lines
+#Bloom Filters
 
 This is a program written in Node.js to implement bloom filter. The problem description can be found here:
 
